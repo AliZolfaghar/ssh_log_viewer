@@ -111,7 +111,6 @@ body {
 
 .log-table th {
   padding: 16px 12px;
-  text-align: right;
   font-weight: 600;
   cursor: pointer;
   transition: background-color 0.2s;
@@ -147,7 +146,6 @@ body {
 
 .log-table td {
   padding: 14px 12px;
-  text-align: right;
 }
 
 /* استایل‌های خاص برای ستون‌ها */
