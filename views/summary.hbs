@@ -1,6 +1,6 @@
 <div class="page-header">
-  <h1><i class="fas fa-chart-bar me-2"></i>آمار اتصال‌ها بر اساس IP</h1>
-  <p class="viewer-ip"><i class="fas fa-eye me-2"></i>شما با IP <span class="ip-address">{{ip}}</span> در حال مشاهده این صفحه هستید</p>
+  <h1><i class="fas fa-chart-bar me-2"></i>Connection Statistics by IP</h1>
+  <p class="viewer-ip"><i class="fas fa-eye me-2"></i>You are viewing this page from IP <span class="ip-address">{{ip}}</span></p>
 </div>
 
 <div class="filter-box">
@@ -11,7 +11,7 @@
     <input 
       type="text" 
       id="searchInput" 
-      placeholder="جستجو بر اساس IP یا یوزرنیم" 
+      placeholder="Search by IP or username" 
       class="form-control filter-input border-start-0"
     />
   </div>
@@ -21,10 +21,10 @@
   <table id="ipSummaryTable" class="log-table sortable-table">
     <thead>
       <tr>
-        <th data-key="ip"><i class="fas fa-globe me-2"></i>IP</th>
-        <th data-key="success"><i class="fas fa-check-circle me-2"></i>موفق</th>
-        <th data-key="failure"><i class="fas fa-times-circle me-2"></i>ناموفق</th>
-        <th data-key="usernames"><i class="fas fa-user me-2"></i>یوزرنیم‌ها</th>
+        <th data-key="ip"><i class="fas fa-globe me-2"></i>IP Address</th>
+        <th data-key="success"><i class="fas fa-check-circle me-2"></i>Successful</th>
+        <th data-key="failure"><i class="fas fa-times-circle me-2"></i>Failed</th>
+        <th data-key="usernames"><i class="fas fa-user me-2"></i>Usernames</th>
       </tr>
     </thead>
     <tbody>
@@ -48,12 +48,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const rows = Array.from(table.querySelectorAll('tbody tr'));
   let currentSort = { key: null, direction: 'asc' };
 
-  // افزودن انیمیشن به ردیف‌ها
+  // Add animation to rows
   rows.forEach((row, index) => {
     row.style.animationDelay = `${index * 0.05}s`;
   });
 
-  // فیلتر کردن جدول
+  // Filter table
   input.addEventListener('input', () => {
     const value = input.value.toLowerCase();
     let hasVisibleRows = false;
@@ -66,19 +66,19 @@ document.addEventListener('DOMContentLoaded', () => {
       if (isVisible) hasVisibleRows = true;
     });
     
-    // نمایش پیام در صورت عدم وجود نتیجه
+    // Show message when no results found
     let noResultsRow = table.querySelector('.no-results');
     if (!hasVisibleRows && !noResultsRow) {
       noResultsRow = document.createElement('tr');
       noResultsRow.className = 'no-results';
-      noResultsRow.innerHTML = `<td colspan="4">هیچ نتیجه‌ای یافت نشد</td>`;
+      noResultsRow.innerHTML = `<td colspan="4">No results found</td>`;
       table.querySelector('tbody').appendChild(noResultsRow);
     } else if (hasVisibleRows && noResultsRow) {
       noResultsRow.remove();
     }
   });
 
-  // مرتب‌سازی جدول
+  // Sort table
   headers.forEach(th => {
     th.addEventListener('click', () => {
       const key = th.dataset.key;
@@ -86,25 +86,25 @@ document.addEventListener('DOMContentLoaded', () => {
       const direction = currentSort.key === key && currentSort.direction === 'asc' ? 'desc' : 'asc';
       currentSort = { key, direction };
 
-      // حذف کلاس‌های مرتب‌سازی از همه هدرها
+      // Remove sort classes from all headers
       headers.forEach(h => {
         h.classList.remove('sorted-asc', 'sorted-desc');
         h.querySelector('i').className = 'fas me-2';
       });
       
-      // افزودن کلاس مرتب‌سازی به هدر فعلی
+      // Add sort class to current header
       th.classList.add(direction === 'asc' ? 'sorted-asc' : 'sorted-desc');
       
-      // تغییر آیکون هدر
+      // Change header icon
       const icon = th.querySelector('i');
       icon.className = direction === 'asc' ? 'fas fa-sort-up me-2' : 'fas fa-sort-down me-2';
 
-      // مرتب‌سازی ردیف‌ها
+      // Sort rows
       const sorted = rows.sort((a, b) => {
         let aText = a.children[index].textContent.trim();
         let bText = b.children[index].textContent.trim();
         
-        // حذف آیکون‌ها و بدج‌ها از متن
+        // Remove icons and badges from text
         aText = aText.replace(/<[^>]*>/g, '').trim();
         bText = bText.replace(/<[^>]*>/g, '').trim();
         
@@ -116,7 +116,7 @@ document.addEventListener('DOMContentLoaded', () => {
           : aVal < bVal ? 1 : aVal > bVal ? -1 : 0;
       });
 
-      // افزودن ردیف‌های مرتب‌شده به جدول
+      // Add sorted rows to table
       const tbody = table.querySelector('tbody');
       tbody.innerHTML = '';
       sorted.forEach(row => tbody.appendChild(row));
