@@ -29,7 +29,11 @@ const hbsHelpers = {
     if (typeof str !== 'string') return str;
     if (str.length <= length) return str;
     return str.substring(0, length) + '...';
-  }
+  } , 
+  splitUsernames: (usernames) => {
+    if (!usernames) return [];
+    return usernames.split(',').map(username => username.trim()).filter(username => username !== '');
+  },
 };
 
 app.engine('hbs', engine({
