@@ -27,6 +27,13 @@
                         <span class="username">{{user.username}}</span>
                         <span class="user-role">({{user.role}})</span>
                     </div>
+                    
+                    <!-- دکمه تغییر رمز عبور -->
+                    <button class="nav-link change-password-btn" onclick="showChangePasswordModal()">
+                        <i class="fas fa-key"></i>
+                        <span>Change Password</span>
+                    </button>
+                    
                     <a href="/logout" class="nav-link logout-btn">
                         <i class="fas fa-sign-out-alt"></i>
                         <span>Logout</span>
@@ -94,6 +101,9 @@
         transition: all 0.3s ease;
         font-weight: 500;
         font-size: 0.9rem;
+        border: none;
+        background: none;
+        cursor: pointer;
     }
 
     .nav-link:hover {
@@ -139,6 +149,16 @@
         background: rgba(255, 255, 255, 0.2);
         padding: 2px 6px;
         border-radius: 4px;
+    }
+
+    .change-password-btn {
+        background: rgba(46, 204, 113, 0.2);
+        border: 1px solid rgba(46, 204, 113, 0.3);
+    }
+
+    .change-password-btn:hover {
+        background: rgba(46, 204, 113, 0.3);
+        transform: translateY(-1px);
     }
 
     .logout-btn {
@@ -215,6 +235,7 @@
             text-align: center;
         }
 
+        .change-password-btn,
         .logout-btn {
             width: 100%;
             justify-content: center;
@@ -265,4 +286,122 @@
             });
         }
     });
+
+    // تابع نمایش مودال تغییر رمز عبور
+    function showChangePasswordModal() {
+        Swal.fire({
+            title: 'Change Password',
+            html: `
+                <form id="changePasswordForm">
+                    <div class="mb-3">
+                        <label for="currentPassword" class="form-label">Current Password</label>
+                        <input type="password" class="form-control" id="currentPassword" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="newPassword" class="form-label">New Password</label>
+                        <input type="password" class="form-control" id="newPassword" required 
+                               minlength="6" placeholder="At least 6 characters">
+                    </div>
+                    <div class="mb-3">
+                        <label for="confirmPassword" class="form-label">Confirm New Password</label>
+                        <input type="password" class="form-control" id="confirmPassword" required>
+                    </div>
+                </form>
+                <div id="passwordError" class="text-danger small mt-2" style="display: none;"></div>
+            `,
+            showCancelButton: true,
+            confirmButtonText: 'Change Password',
+            cancelButtonText: 'Cancel',
+            confirmButtonColor: '#2ecc71',
+            cancelButtonColor: '#95a5a6',
+            preConfirm: () => {
+                const currentPassword = document.getElementById('currentPassword').value;
+                const newPassword = document.getElementById('newPassword').value;
+                const confirmPassword = document.getElementById('confirmPassword').value;
+                const errorDiv = document.getElementById('passwordError');
+
+                // اعتبارسنجی
+                if (!currentPassword || !newPassword || !confirmPassword) {
+                    errorDiv.textContent = 'All fields are required';
+                    errorDiv.style.display = 'block';
+                    return false;
+                }
+
+                if (newPassword.length < 6) {
+                    errorDiv.textContent = 'New password must be at least 6 characters';
+                    errorDiv.style.display = 'block';
+                    return false;
+                }
+
+                if (newPassword !== confirmPassword) {
+                    errorDiv.textContent = 'New passwords do not match';
+                    errorDiv.style.display = 'block';
+                    return false;
+                }
+
+                return { currentPassword, newPassword };
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                changePassword(result.value);
+            }
+        });
+    }
+
+    // تابع تغییر رمز عبور
+    async function changePassword(passwordData) {
+        try {
+            const response = await fetch('/api/change-password', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(passwordData)
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                // نمایش رمز جدید به کاربر
+                Swal.fire({
+                    title: 'Password Changed Successfully!',
+                    html: `
+                        <div style="text-align: center;">
+                            <i class="fas fa-check-circle text-success" style="font-size: 48px; margin-bottom: 20px;"></i>
+                            <p>Your password has been changed successfully.</p>
+                            <div class="alert alert-info mt-3">
+                                <strong>New Password:</strong> 
+                                <code style="font-size: 1.1em; background: #f8f9fa; padding: 5px 10px; border-radius: 4px;">
+                                    ${passwordData.newPassword}
+                                </code>
+                            </div>
+                            <p class="text-muted small mt-2">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                Please save this password in a secure location.
+                            </p>
+                        </div>
+                    `,
+                    icon: 'success',
+                    confirmButtonText: 'OK, I saved it',
+                    confirmButtonColor: '#2ecc71',
+                    width: 600
+                });
+            } else {
+                Swal.fire({
+                    title: 'Error',
+                    text: result.message || 'Failed to change password',
+                    icon: 'error',
+                    confirmButtonText: 'Try Again'
+                });
+            }
+        } catch (error) {
+            console.error('Error changing password:', error);
+            Swal.fire({
+                title: 'Error',
+                text: 'An error occurred while changing password',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+        }
+    }
 </script>
