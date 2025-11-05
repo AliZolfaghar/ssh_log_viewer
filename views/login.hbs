@@ -241,11 +241,18 @@
             <p>Secure Access Required</p>
         </div>
         
-        <form class="login-form" id="loginForm">
+        <form class="login-form" id="loginForm" method="POST" action="/login">
+            {{#if error}}
+            <div class="error-message show" id="errorMessage">
+                <i class="fas fa-exclamation-circle"></i>
+                {{error}}
+            </div>
+            {{else}}
             <div class="error-message" id="errorMessage">
                 <i class="fas fa-exclamation-circle"></i>
                 Invalid username or password
             </div>
+            {{/if}}
             
             <div class="form-group">
                 <label for="username">
@@ -256,9 +263,11 @@
                     <input 
                         type="text" 
                         id="username" 
+                        name="username"
                         class="form-control" 
                         placeholder="Enter your username" 
                         required
+                        value="{{username}}"
                     >
                 </div>
             </div>
@@ -272,6 +281,7 @@
                     <input 
                         type="password" 
                         id="password" 
+                        name="password"
                         class="form-control" 
                         placeholder="Enter your password" 
                         required
@@ -291,27 +301,21 @@
 
     <script>
         document.getElementById('loginForm').addEventListener('submit', function(e) {
-            e.preventDefault();
+            // Remove any existing shake animation
+            this.classList.remove('shake');
             
+            // Basic client-side validation
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
             const errorMessage = document.getElementById('errorMessage');
             
-            // Simple validation (replace with actual authentication)
-            if (username === 'admin' && password === 'admin') {
-                // Successful login
-                localStorage.setItem('authenticated', 'true');
-                window.location.href = '/';
-            } else {
-                // Failed login
+            if (!username || !password) {
+                e.preventDefault();
                 errorMessage.classList.add('show');
-                document.getElementById('loginForm').classList.add('shake');
+                this.classList.add('shake');
                 setTimeout(() => {
-                    document.getElementById('loginForm').classList.remove('shake');
+                    this.classList.remove('shake');
                 }, 500);
-                
-                // Clear password field
-                document.getElementById('password').value = '';
             }
         });
 
@@ -321,6 +325,13 @@
 
         // Focus on username field when page loads
         document.getElementById('username').focus();
+
+        // Add loading state to button
+        document.getElementById('loginForm').addEventListener('submit', function() {
+            const button = this.querySelector('button[type="submit"]');
+            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing In...';
+            button.disabled = true;
+        });
     </script>
 </body>
 </html>

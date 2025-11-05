@@ -1,14 +1,22 @@
 import express from 'express';
 import { engine } from 'express-handlebars';
 import path from 'path';
-import fs from 'fs';
 import { fileURLToPath } from 'url';
-import { geSshLogsSummary } from './lib/geSshLogsSummary.js'
+import { geSshLogsSummary } from './lib/geSshLogsSummary.js';
+import { initializeDatabase, userDB } from './lib/database.js';
+import { authService } from './lib/auth.js';
+import cookieParser from 'cookie-parser';
+import { v4 as uuidv4 } from 'uuid';
 
 const app = express();
 const port = 80;
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+// Middleware
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+app.use(cookieParser());
 
 // تعریف helpers برای Handlebars
 const hbsHelpers = {
@@ -17,20 +25,16 @@ const hbsHelpers = {
   lt: (a, b) => a < b,
   gte: (a, b) => a >= b,
   lte: (a, b) => a <= b,
-  // Helper برای جدا کردن usernames با کاما
   splitUsernames: (usernames) => {
     if (!usernames) return [];
     if (typeof usernames !== 'string') return [];
     return usernames.split(',').map(username => username.trim()).filter(username => username !== '');
   },
-  // helper برای چک کردن وجود مقدار
   exists: (value) => value !== null && value !== undefined && value !== '',
-  // helper برای فرمت کردن اعداد
   formatNumber: (num) => {
     if (typeof num !== 'number') return num;
     return new Intl.NumberFormat().format(num);
   },
-  // helper برای محدود کردن طول متن
   truncate: (str, length) => {
     if (typeof str !== 'string') return str;
     if (str.length <= length) return str;
@@ -49,42 +53,150 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Middleware برای بررسی احراز هویت
-const requireAuth = (req, res, next) => {
-  // در اینجا می‌توانید منطق احراز هویت واقعی را پیاده‌سازی کنید
-  // برای نمونه، از یک چک ساده استفاده می‌کنیم
-  const isAuthenticated = true; // در حالت واقعی این را از session یا token چک کنید
+const requireAuth = async (req, res, next) => {
+  const sessionId = req.cookies.sessionId;
   
-  if (isAuthenticated) {
-    next();
-  } else {
-    res.redirect('/login');
+  if (!sessionId) {
+    return res.redirect('/login');
   }
+
+  const verification = await authService.verifySession(sessionId);
+  
+  if (!verification.valid) {
+    res.clearCookie('sessionId');
+    return res.redirect('/login');
+  }
+
+  req.user = verification.user;
+  req.session = verification.session;
+  next();
 };
 
 // Route لاگین
 app.get('/login', (req, res) => {
-  res.render('login', {
-    layout: false // بدون layout اصلی
+  res.render('login', { 
+    layout: false,
+    error: req.query.error 
   });
+});
+
+// پردازش لاگین
+app.post('/login', async (req, res) => {
+  const { username, password } = req.body;
+  const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+  const userAgent = req.headers['user-agent'];
+
+  try {
+    const result = await authService.login(username, password, ip, userAgent);
+
+    if (result.success) {
+      // تنظیم cookie session
+      res.cookie('sessionId', result.sessionId, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        maxAge: 24 * 60 * 60 * 1000 // 24 hours
+      });
+
+      return res.redirect('/');
+    } else {
+      return res.render('login', {
+        layout: false,
+        error: result.message,
+        username: username // بازگرداندن نام کاربری برای راحتی کاربر
+      });
+    }
+  } catch (error) {
+    console.error('Login error:', error);
+    return res.render('login', {
+      layout: false,
+      error: 'Internal server error',
+      username: username
+    });
+  }
 });
 
 // Route اصلی با احراز هویت
 app.get('/', requireAuth, async (req, res) => {
-  const rows = await geSshLogsSummary();
-  const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
-  res.render('summary', {
-    layout: 'main',
-    rows,
-    ip
-  });
+  try {
+    const rows = await geSshLogsSummary();
+    const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+    
+    res.render('summary', {
+      layout: 'main',
+      rows,
+      ip,
+      user: req.user
+    });
+  } catch (error) {
+    console.error('Error loading summary:', error);
+    res.status(500).render('error', {
+      layout: 'main',
+      error: 'Failed to load statistics'
+    });
+  }
 });
 
 // Route برای لاگ‌اوت
-app.get('/logout', (req, res) => {
-  // در اینجا session یا token را پاک کنید
+app.get('/logout', async (req, res) => {
+  const sessionId = req.cookies.sessionId;
+  
+  if (sessionId) {
+    await authService.logout(sessionId);
+  }
+
+  res.clearCookie('sessionId');
   res.redirect('/login');
 });
 
-app.listen(port, () => {
-  console.log(`🚀 Server running at http://localhost:${port}`);
+// Route برای مدیریت کاربران (اختیاری)
+app.get('/admin/users', requireAuth, async (req, res) => {
+  if (req.user.role !== 'admin') {
+    return res.status(403).send('Access denied');
+  }
+
+  try {
+    const users = await userDB.findAll();
+    res.render('users', {
+      layout: 'main',
+      users,
+      user: req.user
+    });
+  } catch (error) {
+    console.error('Error loading users:', error);
+    res.status(500).render('error', {
+      layout: 'main',
+      error: 'Failed to load users'
+    });
+  }
 });
+
+// Route سلامت سیستم
+app.get('/health', (req, res) => {
+  res.json({ 
+    status: 'OK', 
+    timestamp: new Date().toISOString(),
+    version: '1.0.0'
+  });
+});
+
+// مقداردهی اولیه و راه‌اندازی سرور
+const startServer = async () => {
+  try {
+    // مقداردهی اولیه دیتابیس
+    await initializeDatabase();
+    
+    // راه‌اندازی سرور
+    app.listen(port, () => {
+      console.log(`🚀 Server running at http://localhost:${port}`);
+      console.log(`🔐 Default login: admin / admin`);
+      console.log(`💾 Database file: ${path.join(__dirname, 'data/db.json')}`);
+      console.log(`📊 Dashboard: http://localhost:${port}/`);
+      console.log(`🔑 Login page: http://localhost:${port}/login`);
+    });
+  } catch (error) {
+    console.error('❌ Failed to start server:', error);
+    process.exit(1);
+  }
+};
+
+startServer();

@@ -5,7 +5,11 @@
         "start": "node server.js"
     },
     "dependencies": {
+        "bcryptjs": "^3.0.3",
+        "cookie-parser": "^1.4.7",
         "express": "^5.1.0",
-        "express-handlebars": "^8.0.2"
+        "express-handlebars": "^8.0.2",
+        "lowdb": "^7.0.1",
+        "uuid": "^13.0.0"
     }
 }
