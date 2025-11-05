@@ -21,7 +21,7 @@
   <table id="ipSummaryTable" class="log-table sortable-table">
     <thead>
       <tr>
-        <th data-key="ip" style="white-space: nowrap;"><i class="fas fa-globe me-2"></i>IP Address</th>
+        <th data-key="ip"><i class="fas fa-globe me-2"></i>IP Address</th>
         <th data-key="success"><i class="fas fa-check-circle me-2"></i>Successful</th>
         <th data-key="failure"><i class="fas fa-times-circle me-2"></i>Failed</th>
         <th data-key="usernames"><i class="fas fa-user me-2"></i>Usernames</th>
@@ -30,10 +30,16 @@
     <tbody>
       {{#each rows}}
         <tr class="{{#if (gt success 10)}}high-success{{/if}} {{#if (gt failure 5)}}high-failure{{/if}}">
-          <td style="white-space: nowrap;"><i class="fas fa-network-wired me-2 text-primary"></i>{{ip}}</td>
+          <td><i class="fas fa-network-wired me-2 text-primary"></i>{{ip}}</td>
           <td><span class="badge bg-success">{{success}}</span></td>
           <td><span class="badge bg-danger">{{failure}}</span></td>
-          <td><span class="usernames">{{usernames}}</span></td>
+          <td>
+            <div class="username-badges">
+              {{#each (splitUsernames usernames)}}
+                <span class="badge bg-secondary username-badge">{{this}}</span>
+              {{/each}}
+            </div>
+          </td>
         </tr>
       {{/each}}
     </tbody>
