@@ -1,0 +1,12 @@
+{
+    "name": "ssh-log-viewer",
+    "type": "module",
+    "scripts": {
+        "start": "node server.js"
+    },
+    "dependencies": {
+        "better-sqlite3": "^12.4.1",
+        "express": "^5.1.0",
+        "express-handlebars": "^8.0.2"
+    }
+}

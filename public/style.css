@@ -1,0 +1,120 @@
+@import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700&display=swap');
+
+body {
+  font-family: 'Vazirmatn', sans-serif;
+  background-color: #f9f9fb;
+  color: #333;
+  padding: 2rem;
+  direction: rtl;
+}
+
+h1 {
+  text-align: center;
+  font-size: 1.8rem;
+  margin-bottom: 2rem;
+  color: #444;
+}
+
+.ip-address {
+  background-color: #e0f7fa;
+  color: #00796b;
+  padding: 0.2rem 0.6rem;
+  border-radius: 6px;
+  font-weight: bold;
+  font-family: monospace;
+}
+
+.filter-box {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
+.filter-input {
+  padding: 0.6rem 1rem;
+  width: 320px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: box-shadow 0.2s;
+}
+
+.filter-input:focus {
+  outline: none;
+  box-shadow: 0 0 5px rgba(0, 150, 136, 0.4);
+}
+
+.table-container {
+  overflow-x: auto;
+}
+
+.log-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #fff;
+  box-shadow: 0 0 10px rgba(0,0,0,0.05);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+thead {
+  background-color: #f0f0f5;
+}
+
+th, td {
+  padding: 0.75rem;
+  text-align: center;
+  border-bottom: 1px solid #eee;
+}
+
+th.sortable {
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+th.sortable:hover {
+  background-color: #e0e0e0;
+}
+
+tr:hover {
+  background-color: #fafafa;
+}
+
+td[data-label]::before {
+  content: attr(data-label);
+  display: none;
+}
+
+@media (max-width: 768px) {
+  table, thead, tbody, th, td, tr {
+    display: block;
+  }
+
+  thead {
+    display: none;
+  }
+
+  tr {
+    margin-bottom: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 0.5rem;
+    background-color: #fff;
+  }
+
+  td {
+    text-align: right;
+    padding: 0.5rem;
+    position: relative;
+  }
+
+  td::before {
+    content: attr(data-label);
+    font-weight: bold;
+    position: absolute;
+    right: 1rem;
+    top: 0.5rem;
+    color: #666;
+    display: block;
+  }
+}

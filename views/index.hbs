@@ -1,0 +1,43 @@
+<div class="page-header">
+  <h1>
+    👀 شما با IP 
+    <span class="ip-address">{{ip}}</span> 
+    وارد شدید
+  </h1>
+</div>
+
+<div class="filter-box">
+  <input 
+    type="text" 
+    id="filterInput" 
+    placeholder="🔍 فیلتر بر اساس IP یا یوزرنیم" 
+    class="filter-input"
+  />
+</div>
+
+<div class="table-container">
+  <table id="logTable" class="log-table">
+    <thead>
+      <tr>
+        <th class="sortable" data-key="timestamp">⏱ زمان</th>
+        <th class="sortable" data-key="status">📌 وضعیت</th>
+        <th class="sortable" data-key="username">👤 یوزر</th>
+        <th class="sortable" data-key="ip">🌐 IP</th>
+        <th class="sortable" data-key="port">🔌 پورت</th>
+        <th class="sortable" data-key="method">🔐 روش</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each logs}}
+        <tr>
+          <td data-label="زمان">{{timestamp}}</td>
+          <td data-label="وضعیت">{{status}}</td>
+          <td data-label="یوزر">{{username}}</td>
+          <td data-label="IP">{{ip}}</td>
+          <td data-label="پورت">{{port}}</td>
+          <td data-label="روش">{{method}}</td>
+        </tr>
+      {{/each}}
+    </tbody>
+  </table>
+</div>
