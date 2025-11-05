@@ -98,19 +98,11 @@
             <div class="stat-label">Total Users</div>
           </div>
           <div class="stat-item">
-            <div class="stat-number text-success">
-              {{#with (filter users lastLogin) as |activeUsers|}}
-                {{activeUsers.length}}
-              {{/with}}
-            </div>
+            <div class="stat-number text-success">{{countActiveUsers users}}</div>
             <div class="stat-label">Active Users</div>
           </div>
           <div class="stat-item">
-            <div class="stat-number text-danger">
-              {{#with (filter users "role" "admin") as |admins|}}
-                {{admins.length}}
-              {{/with}}
-            </div>
+            <div class="stat-number text-danger">{{countAdmins users}}</div>
             <div class="stat-label">Admins</div>
           </div>
         </div>
@@ -162,7 +154,7 @@
     padding: 20px 25px;
     border-bottom: none;
     display: flex;
-    justify-content: between;
+    justify-content: space-between;
     align-items: center;
   }
 
@@ -171,7 +163,6 @@
     margin: 0;
     font-size: 1.3rem;
     font-weight: 600;
-    flex: 1;
   }
 
   .card-body {

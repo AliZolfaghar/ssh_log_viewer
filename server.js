@@ -17,6 +17,17 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser());
 
+// Helper functions برای محاسبات
+const countActiveUsers = (users) => {
+  if (!users || !Array.isArray(users)) return 0;
+  return users.filter(user => user.lastLogin).length;
+};
+
+const countAdmins = (users) => {
+  if (!users || !Array.isArray(users)) return 0;
+  return users.filter(user => user.role === 'admin').length;
+};
+
 // تعریف helpers برای Handlebars
 const hbsHelpers = {
   // Helpers مقایسه
@@ -71,6 +82,21 @@ const hbsHelpers = {
     } catch (error) {
       return 'Invalid Date';
     }
+  },
+
+  // Helper برای شمارش کاربران فعال
+  countActiveUsers: (users) => {
+    return countActiveUsers(users);
+  },
+
+  // Helper برای شمارش ادمین‌ها
+  countAdmins: (users) => {
+    return countAdmins(users);
+  },
+
+  // Helper برای گرفتن تاریخ و زمان فعلی
+  now: () => {
+    return new Date().toISOString();
   },
   
   // helper برای چک کردن وجود مقدار
@@ -216,11 +242,21 @@ app.get('/admin/users', requireAuth, async (req, res) => {
 
   try {
     const users = await userDB.findAll();
+    
+    // محاسبه آمار برای پاس دادن به تمپلیت
+    const activeUsersCount = countActiveUsers(users);
+    const adminsCount = countAdmins(users);
+    
     res.render('users', {
       layout: 'main',
       users,
       user: req.user,
-      activePage: 'users'
+      activePage: 'users',
+      stats: {
+        total: users.length,
+        active: activeUsersCount,
+        admins: adminsCount
+      }
     });
   } catch (error) {
     console.error('Error loading users:', error);
