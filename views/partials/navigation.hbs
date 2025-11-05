@@ -1,0 +1,268 @@
+<nav class="navbar">
+    <div class="nav-container">
+        <!-- Brand/Logo -->
+        <div class="nav-brand">
+            <i class="fas fa-shield-alt"></i>
+            <span>SSH Statistics</span>
+        </div>
+
+        <!-- Navigation Links -->
+        <div class="nav-links">
+            <a href="/" class="nav-link {{#if (eq activePage 'dashboard')}}active{{/if}}">
+                <i class="fas fa-chart-bar"></i>
+                <span>Dashboard</span>
+            </a>
+            
+            {{#if user}}
+                {{#if (eq user.role 'admin')}}
+                <a href="/admin/users" class="nav-link {{#if (eq activePage 'users')}}active{{/if}}">
+                    <i class="fas fa-users"></i>
+                    <span>User Management</span>
+                </a>
+                {{/if}}
+                
+                <div class="nav-user">
+                    <div class="user-info">
+                        <i class="fas fa-user-circle"></i>
+                        <span class="username">{{user.username}}</span>
+                        <span class="user-role">({{user.role}})</span>
+                    </div>
+                    <a href="/logout" class="nav-link logout-btn">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Logout</span>
+                    </a>
+                </div>
+            {{/if}}
+        </div>
+
+        <!-- Mobile Menu Button -->
+        <button class="mobile-menu-btn" id="mobileMenuBtn">
+            <i class="fas fa-bars"></i>
+        </button>
+    </div>
+</nav>
+
+<style>
+    .navbar {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        padding: 0;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+    }
+
+    .nav-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 20px;
+        height: 60px;
+    }
+
+    .nav-brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: white;
+        text-decoration: none;
+    }
+
+    .nav-brand i {
+        font-size: 1.5rem;
+    }
+
+    .nav-links {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+    }
+
+    .nav-link {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: rgba(255, 255, 255, 0.8);
+        text-decoration: none;
+        padding: 10px 15px;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        font-weight: 500;
+        font-size: 0.9rem;
+    }
+
+    .nav-link:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+        transform: translateY(-1px);
+    }
+
+    .nav-link.active {
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+    }
+
+    .nav-user {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-left: 20px;
+        padding-left: 20px;
+        border-left: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .user-info {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: white;
+        font-size: 0.9rem;
+    }
+
+    .user-info i {
+        font-size: 1.2rem;
+        color: rgba(255, 255, 255, 0.8);
+    }
+
+    .username {
+        font-weight: 600;
+    }
+
+    .user-role {
+        font-size: 0.8rem;
+        opacity: 0.8;
+        background: rgba(255, 255, 255, 0.2);
+        padding: 2px 6px;
+        border-radius: 4px;
+    }
+
+    .logout-btn {
+        background: rgba(231, 76, 60, 0.2);
+        border: 1px solid rgba(231, 76, 60, 0.3);
+    }
+
+    .logout-btn:hover {
+        background: rgba(231, 76, 60, 0.3);
+        transform: translateY(-1px);
+    }
+
+    .mobile-menu-btn {
+        display: none;
+        background: none;
+        border: none;
+        color: white;
+        font-size: 1.25rem;
+        cursor: pointer;
+        padding: 5px;
+        border-radius: 4px;
+        transition: background 0.3s ease;
+    }
+
+    .mobile-menu-btn:hover {
+        background: rgba(255, 255, 255, 0.1);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .nav-container {
+            padding: 0 15px;
+        }
+
+        .mobile-menu-btn {
+            display: block;
+        }
+
+        .nav-links {
+            position: fixed;
+            top: 60px;
+            left: 0;
+            width: 100%;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            flex-direction: column;
+            padding: 20px;
+            gap: 10px;
+            transform: translateY(-100%);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-links.mobile-open {
+            transform: translateY(0);
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .nav-user {
+            margin-left: 0;
+            padding-left: 0;
+            border-left: none;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            padding-top: 15px;
+            flex-direction: column;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .user-info {
+            justify-content: center;
+            text-align: center;
+        }
+
+        .logout-btn {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .nav-brand span {
+            display: none;
+        }
+
+        .nav-brand {
+            font-size: 1.1rem;
+        }
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const navLinks = document.querySelector('.nav-links');
+
+        if (mobileMenuBtn && navLinks) {
+            mobileMenuBtn.addEventListener('click', function() {
+                navLinks.classList.toggle('mobile-open');
+                
+                // تغییر آیکون منو
+                const icon = mobileMenuBtn.querySelector('i');
+                if (navLinks.classList.contains('mobile-open')) {
+                    icon.className = 'fas fa-times';
+                } else {
+                    icon.className = 'fas fa-bars';
+                }
+            });
+
+            // بستن منو هنگام کلیک خارج از آن
+            document.addEventListener('click', function(event) {
+                if (!event.target.closest('.nav-container')) {
+                    navLinks.classList.remove('mobile-open');
+                    const icon = mobileMenuBtn.querySelector('i');
+                    icon.className = 'fas fa-bars';
+                }
+            });
+
+            // جلوگیری از بستن منو هنگام کلیک روی لینک‌ها
+            navLinks.addEventListener('click', function(event) {
+                event.stopPropagation();
+            });
+        }
+    });
+</script>

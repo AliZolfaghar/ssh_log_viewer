@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>SSH Connection Statistics</title>
+    <title>SSH Statistics</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -13,6 +13,23 @@
     <script defer src="/main.js"></script>
   </head>
   <body>
-    {{{body}}}
+    {{> navigation}}
+    
+    <main class="main-content">
+      {{{body}}}
+    </main>
+
+    <style>
+      .main-content {
+        min-height: calc(100vh - 60px);
+        padding: 20px;
+      }
+
+      @media (max-width: 768px) {
+        .main-content {
+          padding: 15px;
+        }
+      }
+    </style>
   </body>
 </html>
