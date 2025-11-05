@@ -46,7 +46,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/', (req, res) => {
-  parseSshLogs();
+  // parseSshLogs();
   const logs = db.prepare('SELECT * FROM ssh_logs ORDER BY timestamp DESC').all();
   res.render('index', {
     layout: 'main',
