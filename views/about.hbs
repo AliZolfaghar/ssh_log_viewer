@@ -1,0 +1,87 @@
+<div class="page-header">
+  <h1><i class="fas fa-info-circle me-2"></i>About SSH Statistics</h1>
+  <p class="viewer-ip">System information and version details</p>
+</div>
+
+<div class="row">
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-header">
+        <h4><i class="fas fa-server me-2"></i>System Information</h4>
+      </div>
+      <div class="card-body">
+        <div class="info-list">
+          <div class="info-item">
+            <span class="info-label">Version:</span>
+            <span class="info-value">1.0.0</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Environment:</span>
+            <span class="info-value badge bg-info">Production</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Server Time:</span>
+            <span class="info-value">{{formatDate (now)}}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Uptime:</span>
+            <span class="info-value">24/7</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-header">
+        <h4><i class="fas fa-shield-alt me-2"></i>Security</h4>
+      </div>
+      <div class="card-body">
+        <div class="info-list">
+          <div class="info-item">
+            <span class="info-label">Authentication:</span>
+            <span class="info-value badge bg-success">Enabled</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Session Timeout:</span>
+            <span class="info-value">24 hours</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Password Hashing:</span>
+            <span class="info-value badge bg-success">bcrypt</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .info-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .info-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .info-item:last-child {
+    border-bottom: none;
+  }
+
+  .info-label {
+    font-weight: 600;
+    color: var(--secondary-color);
+  }
+
+  .info-value {
+    font-weight: 500;
+  }
+</style>

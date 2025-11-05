@@ -6,6 +6,7 @@
 <div class="card">
   <div class="card-header">
     <h3><i class="fas fa-list me-2"></i>System Users</h3>
+    <span class="badge bg-primary">{{users.length}} users</span>
   </div>
   <div class="card-body">
     <div class="table-responsive">
@@ -18,6 +19,7 @@
             <th>Role</th>
             <th>Created</th>
             <th>Last Login</th>
+            <th>Status</th>
           </tr>
         </thead>
         <tbody>
@@ -27,25 +29,120 @@
             <td>
               <i class="fas fa-user me-2 text-primary"></i>
               {{this.username}}
+              {{#if (eq this.id ../user.id)}}
+              <span class="badge bg-info">You</span>
+              {{/if}}
             </td>
-            <td>{{this.email}}</td>
+            <td>
+              {{#if this.email}}
+                <i class="fas fa-envelope me-2 text-muted"></i>
+                {{this.email}}
+              {{else}}
+                <span class="text-muted">No email</span>
+              {{/if}}
+            </td>
             <td>
               <span class="badge {{#if (eq this.role 'admin')}}bg-danger{{else}}bg-secondary{{/if}}">
+                <i class="fas {{#if (eq this.role 'admin')}}fa-crown{{else}}fa-user{{/if}} me-1"></i>
                 {{this.role}}
               </span>
             </td>
-            <td>{{formatDate this.createdAt}}</td>
+            <td>
+              <i class="fas fa-calendar me-2 text-muted"></i>
+              {{formatDate this.createdAt}}
+            </td>
             <td>
               {{#if this.lastLogin}}
+                <i class="fas fa-clock me-2 text-muted"></i>
                 {{formatDate this.lastLogin}}
+                <br>
+                <small class="text-muted">{{shortDate this.lastLogin}}</small>
               {{else}}
-                <span class="text-muted">Never</span>
+                <span class="text-muted">
+                  <i class="fas fa-times me-2"></i>
+                  Never logged in
+                </span>
+              {{/if}}
+            </td>
+            <td>
+              {{#if this.lastLogin}}
+                <span class="badge bg-success">
+                  <i class="fas fa-circle me-1"></i>
+                  Active
+                </span>
+              {{else}}
+                <span class="badge bg-warning">
+                  <i class="fas fa-circle me-1"></i>
+                  Inactive
+                </span>
               {{/if}}
             </td>
           </tr>
           {{/each}}
         </tbody>
       </table>
+    </div>
+  </div>
+</div>
+
+<div class="row mt-4">
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-header">
+        <h4><i class="fas fa-chart-pie me-2"></i>User Statistics</h4>
+      </div>
+      <div class="card-body">
+        <div class="stats-grid">
+          <div class="stat-item">
+            <div class="stat-number">{{users.length}}</div>
+            <div class="stat-label">Total Users</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number text-success">
+              {{#with (filter users lastLogin) as |activeUsers|}}
+                {{activeUsers.length}}
+              {{/with}}
+            </div>
+            <div class="stat-label">Active Users</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number text-danger">
+              {{#with (filter users "role" "admin") as |admins|}}
+                {{admins.length}}
+              {{/with}}
+            </div>
+            <div class="stat-label">Admins</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-header">
+        <h4><i class="fas fa-info-circle me-2"></i>Quick Actions</h4>
+      </div>
+      <div class="card-body">
+        <div class="d-grid gap-2">
+          <button class="btn btn-primary" disabled>
+            <i class="fas fa-user-plus me-2"></i>
+            Add New User
+          </button>
+          <button class="btn btn-outline-secondary" disabled>
+            <i class="fas fa-key me-2"></i>
+            Reset Password
+          </button>
+          <button class="btn btn-outline-secondary" disabled>
+            <i class="fas fa-user-edit me-2"></i>
+            Edit User Roles
+          </button>
+        </div>
+        <p class="text-muted mt-3 small">
+          <i class="fas fa-info-circle me-1"></i>
+          User management features are currently view-only. Full CRUD operations coming soon.
+        </p>
+      </div>
     </div>
   </div>
 </div>
@@ -64,15 +161,57 @@
     color: white;
     padding: 20px 25px;
     border-bottom: none;
+    display: flex;
+    justify-content: between;
+    align-items: center;
   }
 
-  .card-header h3 {
+  .card-header h3,
+  .card-header h4 {
     margin: 0;
     font-size: 1.3rem;
     font-weight: 600;
+    flex: 1;
   }
 
   .card-body {
     padding: 25px;
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    text-align: center;
+  }
+
+  .stat-item {
+    padding: 15px;
+    background: rgba(52, 152, 219, 0.1);
+    border-radius: 8px;
+  }
+
+  .stat-number {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--primary-color);
+  }
+
+  .stat-label {
+    font-size: 0.9rem;
+    color: var(--gray-color);
+    font-weight: 500;
+  }
+
+  @media (max-width: 768px) {
+    .stats-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .card-header {
+      flex-direction: column;
+      gap: 10px;
+      text-align: center;
+    }
   }
 </style>

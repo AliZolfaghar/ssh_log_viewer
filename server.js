@@ -19,25 +19,92 @@ app.use(cookieParser());
 
 // تعریف helpers برای Handlebars
 const hbsHelpers = {
+  // Helpers مقایسه
   gt: (a, b) => a > b,
   eq: (a, b) => a === b,
   lt: (a, b) => a < b,
   gte: (a, b) => a >= b,
   lte: (a, b) => a <= b,
+  
+  // Helper برای جدا کردن usernames با کاما
   splitUsernames: (usernames) => {
     if (!usernames) return [];
     if (typeof usernames !== 'string') return [];
     return usernames.split(',').map(username => username.trim()).filter(username => username !== '');
   },
+  
+  // Helper برای فرمت کردن تاریخ
+  formatDate: (dateString) => {
+    if (!dateString) return 'Never';
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    } catch (error) {
+      return 'Invalid Date';
+    }
+  },
+  
+  // Helper برای فرمت کردن تاریخ به صورت مختصر
+  shortDate: (dateString) => {
+    if (!dateString) return 'Never';
+    try {
+      const date = new Date(dateString);
+      const now = new Date();
+      const diffTime = Math.abs(now - date);
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      
+      if (diffDays === 1) return 'Yesterday';
+      if (diffDays < 7) return `${diffDays} days ago`;
+      if (diffDays < 30) return `${Math.floor(diffDays / 7)} weeks ago`;
+      
+      return date.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+      });
+    } catch (error) {
+      return 'Invalid Date';
+    }
+  },
+  
+  // helper برای چک کردن وجود مقدار
   exists: (value) => value !== null && value !== undefined && value !== '',
+  
+  // helper برای فرمت کردن اعداد
   formatNumber: (num) => {
     if (typeof num !== 'number') return num;
     return new Intl.NumberFormat().format(num);
   },
+  
+  // helper برای محدود کردن طول متن
   truncate: (str, length) => {
     if (typeof str !== 'string') return str;
     if (str.length <= length) return str;
     return str.substring(0, length) + '...';
+  },
+  
+  // helper برای چک کردن اینکه آیا آرایه خالی است یا نه
+  isEmpty: (array) => {
+    if (!array) return true;
+    return array.length === 0;
+  },
+  
+  // helper برای تبدیل به حروف بزرگ
+  uppercase: (str) => {
+    if (typeof str !== 'string') return str;
+    return str.toUpperCase();
+  },
+  
+  // helper برای تبدیل به حروف کوچک
+  lowercase: (str) => {
+    if (typeof str !== 'string') return str;
+    return str.toLowerCase();
   }
 };
 
@@ -186,6 +253,15 @@ app.get('/health', (req, res) => {
   });
 });
 
+// Route برای صفحه about
+app.get('/about', requireAuth, (req, res) => {
+  res.render('about', {
+    layout: 'main',
+    user: req.user,
+    activePage: 'about'
+  });
+});
+
 // مقداردهی اولیه و راه‌اندازی سرور
 const startServer = async () => {
   try {
@@ -197,6 +273,7 @@ const startServer = async () => {
       console.log(`💾 Database file: ${path.join(__dirname, 'data/db.json')}`);
       console.log(`📊 Dashboard: http://localhost:${port}/`);
       console.log(`🔑 Login page: http://localhost:${port}/login`);
+      console.log(`👥 User management: http://localhost:${port}/admin/users`);
     });
   } catch (error) {
     console.error('❌ Failed to start server:', error);
