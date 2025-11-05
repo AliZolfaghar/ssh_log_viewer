@@ -229,7 +229,7 @@ body {
   color: var(--primary-color);
 }
 
-
+/* استایل‌های جدید برای username badges */
 .username-badges {
   display: flex;
   flex-wrap: wrap;
