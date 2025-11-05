@@ -21,11 +21,14 @@
 }
 
 body {
-  font-family: 'Vazirmatn', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
   background-color: var(--bg-color);
   color: var(--dark-color);
   line-height: 1.6;
-  padding: 20px;  
+  padding: 20px;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* هدر صفحه */
@@ -56,6 +59,8 @@ body {
   margin-bottom: 10px;
   position: relative;
   z-index: 1;
+  font-weight: 700;
+  letter-spacing: -0.025em;
 }
 
 .viewer-ip {
@@ -63,13 +68,15 @@ body {
   opacity: 0.9;
   position: relative;
   z-index: 1;
+  font-weight: 500;
 }
 
 .ip-address {
-  font-weight: bold;
+  font-weight: 600;
   background: rgba(255, 255, 255, 0.2);
   padding: 2px 8px;
   border-radius: 4px;
+  font-family: 'Monaco', 'Consolas', 'Courier New', monospace;
 }
 
 /* باکس فیلتر */
@@ -86,12 +93,19 @@ body {
   transition: all 0.3s ease;
   background-color: var(--card-bg);
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  font-family: inherit;
+  font-weight: 400;
 }
 
 .filter-input:focus {
   outline: none;
   border-color: var(--primary-color);
   box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+}
+
+.filter-input::placeholder {
+  color: #9ca3af;
+  font-weight: 400;
 }
 
 /* جدول */
@@ -102,6 +116,7 @@ body {
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  font-weight: 400;
 }
 
 .log-table thead {
@@ -115,6 +130,8 @@ body {
   cursor: pointer;
   transition: background-color 0.2s;
   position: relative;
+  font-size: 0.9rem;
+  letter-spacing: 0.025em;
 }
 
 .log-table th:hover {
@@ -146,22 +163,27 @@ body {
 
 .log-table td {
   padding: 14px 12px;
+  font-weight: 400;
 }
 
 /* استایل‌های خاص برای ستون‌ها */
 .log-table td:first-child {
   font-weight: 600;
   color: var(--primary-color);
+  font-family: 'Monaco', 'Consolas', 'Courier New', monospace;
+  font-size: 0.9rem;
 }
 
 .log-table td:nth-child(2) {
   color: var(--success-color);
   font-weight: 600;
+  font-family: 'Inter', system-ui, sans-serif;
 }
 
 .log-table td:nth-child(3) {
   color: var(--danger-color);
   font-weight: 600;
+  font-family: 'Inter', system-ui, sans-serif;
 }
 
 .log-table td:last-child {
@@ -181,6 +203,7 @@ body {
 @media (max-width: 768px) {
   body {
     padding: 10px;
+    font-size: 0.9rem;
   }
   
   .page-header {
@@ -192,7 +215,7 @@ body {
   }
   
   .log-table {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
   }
   
   .log-table th, 
@@ -202,6 +225,7 @@ body {
   
   .filter-input {
     padding: 12px 15px;
+    font-size: 0.9rem;
   }
 }
 
@@ -221,12 +245,14 @@ body {
   padding: 30px;
   color: var(--gray-color);
   font-style: italic;
+  font-weight: 500;
 }
 
 .loading {
   text-align: center;
   padding: 20px;
   color: var(--primary-color);
+  font-weight: 500;
 }
 
 /* استایل‌های جدید برای username badges */
@@ -237,12 +263,14 @@ body {
 }
 
 .username-badge {
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   padding: 4px 8px;
   border-radius: 12px;
   background-color: #6c757d !important;
   color: white;
   transition: all 0.2s ease;
+  font-weight: 500;
+  font-family: 'Inter', system-ui, sans-serif;
 }
 
 .username-badge:hover {
@@ -265,4 +293,11 @@ body {
 
 .username-badge:nth-child(4n+4) {
   background-color: #f39c12 !important;
+}
+
+/* Badge styles */
+.badge {
+  font-weight: 600;
+  font-family: 'Inter', system-ui, sans-serif;
+  letter-spacing: 0.025em;
 }
