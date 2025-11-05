@@ -25,8 +25,7 @@ body {
   background-color: var(--bg-color);
   color: var(--dark-color);
   line-height: 1.6;
-  padding: 20px;
-  direction: rtl;
+  padding: 20px;  
 }
 
 /* هدر صفحه */
