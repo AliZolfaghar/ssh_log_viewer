@@ -30,7 +30,7 @@
     <tbody>
       {{#each rows}}
         <tr class="{{#if (gt success 10)}}high-success{{/if}} {{#if (gt failure 5)}}high-failure{{/if}}">
-          <td><i class="fas fa-network-wired me-2 text-primary"></i>{{ip}}</td>
+          <td style="white-space: nowrap;"><i class="fas fa-network-wired me-2 text-primary"></i>{{ip}}</td>
           <td><span class="badge bg-success">{{success}}</span></td>
           <td><span class="badge bg-danger">{{failure}}</span></td>
           <td><span class="usernames">{{usernames}}</span></td>
