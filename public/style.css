@@ -228,3 +228,41 @@ body {
   padding: 20px;
   color: var(--primary-color);
 }
+
+
+.username-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.username-badge {
+  font-size: 0.75rem;
+  padding: 4px 8px;
+  border-radius: 12px;
+  background-color: #6c757d !important;
+  color: white;
+  transition: all 0.2s ease;
+}
+
+.username-badge:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+/* استایل‌های مختلف برای badgeها */
+.username-badge:nth-child(4n+1) {
+  background-color: #3498db !important;
+}
+
+.username-badge:nth-child(4n+2) {
+  background-color: #2ecc71 !important;
+}
+
+.username-badge:nth-child(4n+3) {
+  background-color: #e74c3c !important;
+}
+
+.username-badge:nth-child(4n+4) {
+  background-color: #f39c12 !important;
+}
