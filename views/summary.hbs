@@ -1,0 +1,126 @@
+<div class="page-header">
+  <h1><i class="fas fa-chart-bar me-2"></i>آمار اتصال‌ها بر اساس IP</h1>
+  <p class="viewer-ip"><i class="fas fa-eye me-2"></i>شما با IP <span class="ip-address">{{ip}}</span> در حال مشاهده این صفحه هستید</p>
+</div>
+
+<div class="filter-box">
+  <div class="input-group">
+    <span class="input-group-text bg-light border-end-0">
+      <i class="fas fa-search text-muted"></i>
+    </span>
+    <input 
+      type="text" 
+      id="searchInput" 
+      placeholder="جستجو بر اساس IP یا یوزرنیم" 
+      class="form-control filter-input border-start-0"
+    />
+  </div>
+</div>
+
+<div class="table-responsive">
+  <table id="ipSummaryTable" class="log-table sortable-table">
+    <thead>
+      <tr>
+        <th data-key="ip"><i class="fas fa-globe me-2"></i>IP</th>
+        <th data-key="success"><i class="fas fa-check-circle me-2"></i>موفق</th>
+        <th data-key="failure"><i class="fas fa-times-circle me-2"></i>ناموفق</th>
+        <th data-key="usernames"><i class="fas fa-user me-2"></i>یوزرنیم‌ها</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each rows}}
+        <tr class="{{#if (gt success 10)}}high-success{{/if}} {{#if (gt failure 5)}}high-failure{{/if}}">
+          <td><i class="fas fa-network-wired me-2 text-primary"></i>{{ip}}</td>
+          <td><span class="badge bg-success">{{success}}</span></td>
+          <td><span class="badge bg-danger">{{failure}}</span></td>
+          <td><span class="usernames">{{usernames}}</span></td>
+        </tr>
+      {{/each}}
+    </tbody>
+  </table>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const input = document.getElementById('searchInput');
+  const table = document.getElementById('ipSummaryTable');
+  const headers = table.querySelectorAll('th[data-key]');
+  const rows = Array.from(table.querySelectorAll('tbody tr'));
+  let currentSort = { key: null, direction: 'asc' };
+
+  // افزودن انیمیشن به ردیف‌ها
+  rows.forEach((row, index) => {
+    row.style.animationDelay = `${index * 0.05}s`;
+  });
+
+  // فیلتر کردن جدول
+  input.addEventListener('input', () => {
+    const value = input.value.toLowerCase();
+    let hasVisibleRows = false;
+    
+    rows.forEach(row => {
+      const text = row.textContent.toLowerCase();
+      const isVisible = text.includes(value);
+      row.style.display = isVisible ? '' : 'none';
+      
+      if (isVisible) hasVisibleRows = true;
+    });
+    
+    // نمایش پیام در صورت عدم وجود نتیجه
+    let noResultsRow = table.querySelector('.no-results');
+    if (!hasVisibleRows && !noResultsRow) {
+      noResultsRow = document.createElement('tr');
+      noResultsRow.className = 'no-results';
+      noResultsRow.innerHTML = `<td colspan="4">هیچ نتیجه‌ای یافت نشد</td>`;
+      table.querySelector('tbody').appendChild(noResultsRow);
+    } else if (hasVisibleRows && noResultsRow) {
+      noResultsRow.remove();
+    }
+  });
+
+  // مرتب‌سازی جدول
+  headers.forEach(th => {
+    th.addEventListener('click', () => {
+      const key = th.dataset.key;
+      const index = Array.from(th.parentNode.children).indexOf(th);
+      const direction = currentSort.key === key && currentSort.direction === 'asc' ? 'desc' : 'asc';
+      currentSort = { key, direction };
+
+      // حذف کلاس‌های مرتب‌سازی از همه هدرها
+      headers.forEach(h => {
+        h.classList.remove('sorted-asc', 'sorted-desc');
+        h.querySelector('i').className = 'fas me-2';
+      });
+      
+      // افزودن کلاس مرتب‌سازی به هدر فعلی
+      th.classList.add(direction === 'asc' ? 'sorted-asc' : 'sorted-desc');
+      
+      // تغییر آیکون هدر
+      const icon = th.querySelector('i');
+      icon.className = direction === 'asc' ? 'fas fa-sort-up me-2' : 'fas fa-sort-down me-2';
+
+      // مرتب‌سازی ردیف‌ها
+      const sorted = rows.sort((a, b) => {
+        let aText = a.children[index].textContent.trim();
+        let bText = b.children[index].textContent.trim();
+        
+        // حذف آیکون‌ها و بدج‌ها از متن
+        aText = aText.replace(/<[^>]*>/g, '').trim();
+        bText = bText.replace(/<[^>]*>/g, '').trim();
+        
+        const aVal = isNaN(aText) ? aText.toLowerCase() : Number(aText);
+        const bVal = isNaN(bText) ? bText.toLowerCase() : Number(bText);
+        
+        return direction === 'asc'
+          ? aVal > bVal ? 1 : aVal < bVal ? -1 : 0
+          : aVal < bVal ? 1 : aVal > bVal ? -1 : 0;
+      });
+
+      // افزودن ردیف‌های مرتب‌شده به جدول
+      const tbody = table.querySelector('tbody');
+      tbody.innerHTML = '';
+      sorted.forEach(row => tbody.appendChild(row));
+    });
+  });
+});
+</script>

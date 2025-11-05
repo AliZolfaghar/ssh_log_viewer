@@ -1,120 +1,233 @@
-@import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700&display=swap');
+/* متغیرهای رنگ */
+:root {
+  --primary-color: #3498db;
+  --secondary-color: #2c3e50;
+  --success-color: #2ecc71;
+  --danger-color: #e74c3c;
+  --warning-color: #f39c12;
+  --light-color: #ecf0f1;
+  --dark-color: #2c3e50;
+  --gray-color: #95a5a6;
+  --bg-color: #f8f9fa;
+  --card-bg: #ffffff;
+  --border-color: #dee2e6;
+}
+
+/* تنظیمات پایه */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
 body {
-  font-family: 'Vazirmatn', sans-serif;
-  background-color: #f9f9fb;
-  color: #333;
-  padding: 2rem;
+  font-family: 'Vazirmatn', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: var(--bg-color);
+  color: var(--dark-color);
+  line-height: 1.6;
+  padding: 20px;
   direction: rtl;
 }
 
-h1 {
-  text-align: center;
+/* هدر صفحه */
+.page-header {
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  color: white;
+  padding: 25px;
+  border-radius: 12px;
+  margin-bottom: 25px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.page-header::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0,0 L100,0 L100,100 Z" fill="rgba(255,255,255,0.1)"/></svg>');
+  background-size: cover;
+}
+
+.page-header h1 {
   font-size: 1.8rem;
-  margin-bottom: 2rem;
-  color: #444;
+  margin-bottom: 10px;
+  position: relative;
+  z-index: 1;
+}
+
+.viewer-ip {
+  font-size: 1rem;
+  opacity: 0.9;
+  position: relative;
+  z-index: 1;
 }
 
 .ip-address {
-  background-color: #e0f7fa;
-  color: #00796b;
-  padding: 0.2rem 0.6rem;
-  border-radius: 6px;
   font-weight: bold;
-  font-family: monospace;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 2px 8px;
+  border-radius: 4px;
 }
 
+/* باکس فیلتر */
 .filter-box {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: 25px;
 }
 
 .filter-input {
-  padding: 0.6rem 1rem;
-  width: 320px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
+  width: 100%;
+  padding: 14px 20px;
+  border: 2px solid var(--border-color);
+  border-radius: 10px;
   font-size: 1rem;
-  transition: box-shadow 0.2s;
+  transition: all 0.3s ease;
+  background-color: var(--card-bg);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
 }
 
 .filter-input:focus {
   outline: none;
-  box-shadow: 0 0 5px rgba(0, 150, 136, 0.4);
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
 }
 
-.table-container {
-  overflow-x: auto;
-}
-
+/* جدول */
 .log-table {
   width: 100%;
   border-collapse: collapse;
-  background-color: #fff;
-  box-shadow: 0 0 10px rgba(0,0,0,0.05);
-  border-radius: 8px;
+  background-color: var(--card-bg);
+  border-radius: 12px;
   overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
-thead {
-  background-color: #f0f0f5;
+.log-table thead {
+  background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+  color: white;
 }
 
-th, td {
-  padding: 0.75rem;
-  text-align: center;
-  border-bottom: 1px solid #eee;
-}
-
-th.sortable {
+.log-table th {
+  padding: 16px 12px;
+  text-align: right;
+  font-weight: 600;
   cursor: pointer;
+  transition: background-color 0.2s;
+  position: relative;
+}
+
+.log-table th:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.log-table th.sorted-asc::after {
+  content: " \2191";
+  font-weight: normal;
+}
+
+.log-table th.sorted-desc::after {
+  content: " \2193";
+  font-weight: normal;
+}
+
+.log-table tbody tr {
+  border-bottom: 1px solid var(--border-color);
   transition: background-color 0.2s;
 }
 
-th.sortable:hover {
-  background-color: #e0e0e0;
+.log-table tbody tr:last-child {
+  border-bottom: none;
 }
 
-tr:hover {
-  background-color: #fafafa;
+.log-table tbody tr:hover {
+  background-color: rgba(52, 152, 219, 0.05);
 }
 
-td[data-label]::before {
-  content: attr(data-label);
-  display: none;
+.log-table td {
+  padding: 14px 12px;
+  text-align: right;
 }
 
+/* استایل‌های خاص برای ستون‌ها */
+.log-table td:first-child {
+  font-weight: 600;
+  color: var(--primary-color);
+}
+
+.log-table td:nth-child(2) {
+  color: var(--success-color);
+  font-weight: 600;
+}
+
+.log-table td:nth-child(3) {
+  color: var(--danger-color);
+  font-weight: 600;
+}
+
+.log-table td:last-child {
+  color: var(--secondary-color);
+}
+
+/* وضعیت‌های مختلف برای ردیف‌ها */
+.log-table tbody tr.high-success td:nth-child(2) {
+  background-color: rgba(46, 204, 113, 0.1);
+}
+
+.log-table tbody tr.high-failure td:nth-child(3) {
+  background-color: rgba(231, 76, 60, 0.1);
+}
+
+/* استایل برای موبایل */
 @media (max-width: 768px) {
-  table, thead, tbody, th, td, tr {
-    display: block;
+  body {
+    padding: 10px;
   }
+  
+  .page-header {
+    padding: 20px 15px;
+  }
+  
+  .page-header h1 {
+    font-size: 1.5rem;
+  }
+  
+  .log-table {
+    font-size: 0.9rem;
+  }
+  
+  .log-table th, 
+  .log-table td {
+    padding: 10px 8px;
+  }
+  
+  .filter-input {
+    padding: 12px 15px;
+  }
+}
 
-  thead {
-    display: none;
-  }
+/* انیمیشن‌ها */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 
-  tr {
-    margin-bottom: 1rem;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    padding: 0.5rem;
-    background-color: #fff;
-  }
+.log-table tbody tr {
+  animation: fadeIn 0.3s ease forwards;
+}
 
-  td {
-    text-align: right;
-    padding: 0.5rem;
-    position: relative;
-  }
+/* استایل برای حالت‌های مختلف */
+.no-results {
+  text-align: center;
+  padding: 30px;
+  color: var(--gray-color);
+  font-style: italic;
+}
 
-  td::before {
-    content: attr(data-label);
-    font-weight: bold;
-    position: absolute;
-    right: 1rem;
-    top: 0.5rem;
-    color: #666;
-    display: block;
-  }
+.loading {
+  text-align: center;
+  padding: 20px;
+  color: var(--primary-color);
 }
