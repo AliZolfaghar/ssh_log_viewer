@@ -1,0 +1,78 @@
+<div class="page-header">
+  <h1><i class="fas fa-users me-2"></i>User Management</h1>
+  <p class="viewer-ip">Manage system users and permissions</p>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <h3><i class="fas fa-list me-2"></i>System Users</h3>
+  </div>
+  <div class="card-body">
+    <div class="table-responsive">
+      <table class="log-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Created</th>
+            <th>Last Login</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each users}}
+          <tr>
+            <td><strong>#{{this.id}}</strong></td>
+            <td>
+              <i class="fas fa-user me-2 text-primary"></i>
+              {{this.username}}
+            </td>
+            <td>{{this.email}}</td>
+            <td>
+              <span class="badge {{#if (eq this.role 'admin')}}bg-danger{{else}}bg-secondary{{/if}}">
+                {{this.role}}
+              </span>
+            </td>
+            <td>{{formatDate this.createdAt}}</td>
+            <td>
+              {{#if this.lastLogin}}
+                {{formatDate this.lastLogin}}
+              {{else}}
+                <span class="text-muted">Never</span>
+              {{/if}}
+            </td>
+          </tr>
+          {{/each}}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<style>
+  .card {
+    background: var(--card-bg);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    margin-bottom: 25px;
+    overflow: hidden;
+  }
+
+  .card-header {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    padding: 20px 25px;
+    border-bottom: none;
+  }
+
+  .card-header h3 {
+    margin: 0;
+    font-size: 1.3rem;
+    font-weight: 600;
+  }
+
+  .card-body {
+    padding: 25px;
+  }
+</style>

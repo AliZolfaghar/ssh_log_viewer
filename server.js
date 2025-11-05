@@ -6,7 +6,6 @@ import { geSshLogsSummary } from './lib/geSshLogsSummary.js';
 import { initializeDatabase, userDB } from './lib/database.js';
 import { authService } from './lib/auth.js';
 import cookieParser from 'cookie-parser';
-import { v4 as uuidv4 } from 'uuid';
 
 const app = express();
 const port = 80;
@@ -45,6 +44,7 @@ const hbsHelpers = {
 app.engine('hbs', engine({
   extname: '.hbs',
   layoutsDir: path.join(__dirname, 'views/layouts'),
+  partialsDir: path.join(__dirname, 'views/partials'),
   defaultLayout: 'main',
   helpers: hbsHelpers
 }));
@@ -90,11 +90,10 @@ app.post('/login', async (req, res) => {
     const result = await authService.login(username, password, ip, userAgent);
 
     if (result.success) {
-      // تنظیم cookie session
       res.cookie('sessionId', result.sessionId, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
-        maxAge: 24 * 60 * 60 * 1000 // 24 hours
+        maxAge: 24 * 60 * 60 * 1000
       });
 
       return res.redirect('/');
@@ -102,7 +101,7 @@ app.post('/login', async (req, res) => {
       return res.render('login', {
         layout: false,
         error: result.message,
-        username: username // بازگرداندن نام کاربری برای راحتی کاربر
+        username: username
       });
     }
   } catch (error) {
@@ -125,13 +124,43 @@ app.get('/', requireAuth, async (req, res) => {
       layout: 'main',
       rows,
       ip,
-      user: req.user
+      user: req.user,
+      activePage: 'dashboard'
     });
   } catch (error) {
     console.error('Error loading summary:', error);
     res.status(500).render('error', {
       layout: 'main',
-      error: 'Failed to load statistics'
+      error: 'Failed to load statistics',
+      user: req.user
+    });
+  }
+});
+
+// Route برای مدیریت کاربران
+app.get('/admin/users', requireAuth, async (req, res) => {
+  if (req.user.role !== 'admin') {
+    return res.status(403).render('error', {
+      layout: 'main',
+      error: 'Access denied',
+      user: req.user
+    });
+  }
+
+  try {
+    const users = await userDB.findAll();
+    res.render('users', {
+      layout: 'main',
+      users,
+      user: req.user,
+      activePage: 'users'
+    });
+  } catch (error) {
+    console.error('Error loading users:', error);
+    res.status(500).render('error', {
+      layout: 'main',
+      error: 'Failed to load users',
+      user: req.user
     });
   }
 });
@@ -148,28 +177,6 @@ app.get('/logout', async (req, res) => {
   res.redirect('/login');
 });
 
-// Route برای مدیریت کاربران (اختیاری)
-app.get('/admin/users', requireAuth, async (req, res) => {
-  if (req.user.role !== 'admin') {
-    return res.status(403).send('Access denied');
-  }
-
-  try {
-    const users = await userDB.findAll();
-    res.render('users', {
-      layout: 'main',
-      users,
-      user: req.user
-    });
-  } catch (error) {
-    console.error('Error loading users:', error);
-    res.status(500).render('error', {
-      layout: 'main',
-      error: 'Failed to load users'
-    });
-  }
-});
-
 // Route سلامت سیستم
 app.get('/health', (req, res) => {
   res.json({ 
@@ -182,10 +189,8 @@ app.get('/health', (req, res) => {
 // مقداردهی اولیه و راه‌اندازی سرور
 const startServer = async () => {
   try {
-    // مقداردهی اولیه دیتابیس
     await initializeDatabase();
     
-    // راه‌اندازی سرور
     app.listen(port, () => {
       console.log(`🚀 Server running at http://localhost:${port}`);
       console.log(`🔐 Default login: admin / admin`);
