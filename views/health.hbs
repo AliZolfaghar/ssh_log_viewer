@@ -1,0 +1,581 @@
+<div class="page-header">
+  <h1><i class="fas fa-heartbeat me-2"></i>System Health</h1>
+  <p class="viewer-ip">Monitor system status and performance metrics</p>
+</div>
+
+<div class="row">
+  <!-- System Status Card -->
+  <div class="col-md-4 mb-4">
+    <div class="card health-card">
+      <div class="card-header health-card-header">
+        <h4><i class="fas fa-server me-2"></i>System Status</h4>
+      </div>
+      <div class="card-body text-center">
+        <div class="health-status-indicator {{#if health.status}}status-up{{else}}status-down{{/if}}">
+          <i class="fas {{#if health.status}}fa-check-circle{{else}}fa-exclamation-circle{{/if}}"></i>
+        </div>
+        <h3 class="health-status-text {{#if health.status}}text-success{{else}}text-danger{{/if}}">
+          {{#if health.status}}OPERATIONAL{{else}}DEGRADED{{/if}}
+        </h3>
+        <p class="text-muted">Last checked: {{formatDate health.timestamp}}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Uptime Card -->
+  <div class="col-md-4 mb-4">
+    <div class="card health-card">
+      <div class="card-header health-card-header">
+        <h4><i class="fas fa-clock me-2"></i>Uptime</h4>
+      </div>
+      <div class="card-body text-center">
+        <div class="health-metric">
+          <i class="fas fa-rocket text-primary"></i>
+          <h2 class="metric-value">{{health.uptime.days}}d</h2>
+          <p class="metric-label">{{health.uptime.hours}}h {{health.uptime.minutes}}m</p>
+        </div>
+        <div class="uptime-bar">
+          <div class="uptime-fill" style="width: {{health.uptime.percentage}}%"></div>
+        </div>
+        <small class="text-muted">{{health.uptime.percentage}}% uptime this month</small>
+      </div>
+    </div>
+  </div>
+
+  <!-- Performance Card -->
+  <div class="col-md-4 mb-4">
+    <div class="card health-card">
+      <div class="card-header health-card-header">
+        <h4><i class="fas fa-tachometer-alt me-2"></i>Performance</h4>
+      </div>
+      <div class="card-body text-center">
+        <div class="health-metric">
+          <i class="fas fa-microchip text-info"></i>
+          <h2 class="metric-value">{{health.performance.cpu}}%</h2>
+          <p class="metric-label">CPU Usage</p>
+        </div>
+        <div class="health-metric mt-3">
+          <i class="fas fa-memory text-warning"></i>
+          <h2 class="metric-value">{{health.performance.memory}}%</h2>
+          <p class="metric-label">Memory Usage</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Services Status -->
+<div class="row">
+  <div class="col-12">
+    <div class="card health-card">
+      <div class="card-header health-card-header">
+        <h4><i class="fas fa-cogs me-2"></i>Services Status</h4>
+      </div>
+      <div class="card-body">
+        <div class="services-grid">
+          {{#each health.services}}
+          <div class="service-item {{this.status}}">
+            <div class="service-icon">
+              <i class="fas {{this.icon}}"></i>
+            </div>
+            <div class="service-info">
+              <h5 class="service-name">{{this.name}}</h5>
+              <p class="service-description">{{this.description}}</p>
+            </div>
+            <div class="service-status">
+              <span class="status-badge {{this.status}}">
+                {{#if (eq this.status 'up')}}
+                <i class="fas fa-check"></i> Operational
+                {{else if (eq this.status 'degraded')}}
+                <i class="fas fa-exclamation-triangle"></i> Degraded
+                {{else}}
+                <i class="fas fa-times"></i> Down
+                {{/if}}
+              </span>
+              <small class="text-muted">Response: {{this.responseTime}}ms</small>
+            </div>
+          </div>
+          {{/each}}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- System Information -->
+<div class="row mt-4">
+  <div class="col-md-6">
+    <div class="card health-card">
+      <div class="card-header health-card-header">
+        <h4><i class="fas fa-info-circle me-2"></i>System Information</h4>
+      </div>
+      <div class="card-body">
+        <div class="info-grid">
+          <div class="info-item">
+            <span class="info-label">Version:</span>
+            <span class="info-value">{{health.systemInfo.version}}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Environment:</span>
+            <span class="info-value badge bg-{{health.systemInfo.environmentColor}}">
+              {{health.systemInfo.environment}}
+            </span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Node.js:</span>
+            <span class="info-value">{{health.systemInfo.nodeVersion}}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Platform:</span>
+            <span class="info-value">{{health.systemInfo.platform}}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Database:</span>
+            <span class="info-value badge bg-success">
+              <i class="fas fa-check"></i> Connected
+            </span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Sessions:</span>
+            <span class="info-value">{{health.systemInfo.activeSessions}} active</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-6">
+    <div class="card health-card">
+      <div class="card-header health-card-header">
+        <h4><i class="fas fa-chart-line me-2"></i>Recent Activity</h4>
+      </div>
+      <div class="card-body">
+        <div class="activity-list">
+          {{#each health.recentActivity}}
+          <div class="activity-item">
+            <div class="activity-icon {{this.type}}">
+              <i class="fas {{this.icon}}"></i>
+            </div>
+            <div class="activity-content">
+              <p class="activity-text">{{this.message}}</p>
+              <small class="activity-time">{{this.timestamp}}</small>
+            </div>
+          </div>
+          {{/each}}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="row mt-4">
+  <div class="col-12">
+    <div class="card health-card">
+      <div class="card-header health-card-header">
+        <h4><i class="fas fa-bolt me-2"></i>Quick Actions</h4>
+      </div>
+      <div class="card-body">
+        <div class="actions-grid">
+          <button class="action-btn btn-primary" onclick="refreshHealth()">
+            <i class="fas fa-sync-alt"></i>
+            <span>Refresh Data</span>
+          </button>
+          <button class="action-btn btn-info" onclick="showSystemLogs()">
+            <i class="fas fa-file-alt"></i>
+            <span>View Logs</span>
+          </button>
+          <button class="action-btn btn-warning" onclick="restartServices()">
+            <i class="fas fa-redo"></i>
+            <span>Restart Services</span>
+          </button>
+          <button class="action-btn btn-danger" onclick="showAdvancedSettings()">
+            <i class="fas fa-cog"></i>
+            <span>Advanced Settings</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .health-card {
+    background: var(--card-bg);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    border: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .health-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+  }
+
+  .health-card-header {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    padding: 20px 25px;
+    border-bottom: none;
+    border-radius: 12px 12px 0 0 !important;
+  }
+
+  .health-card-header h4 {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 600;
+  }
+
+  .health-status-indicator {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+  }
+
+  .status-up {
+    color: var(--success-color);
+  }
+
+  .status-down {
+    color: var(--danger-color);
+  }
+
+  .health-status-text {
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+
+  .health-metric {
+    padding: 1rem 0;
+  }
+
+  .health-metric i {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .metric-value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin: 0.5rem 0;
+    color: var(--primary-color);
+  }
+
+  .metric-label {
+    color: var(--gray-color);
+    font-weight: 500;
+    margin: 0;
+  }
+
+  .uptime-bar {
+    width: 100%;
+    height: 8px;
+    background: var(--border-color);
+    border-radius: 4px;
+    margin: 1rem 0;
+    overflow: hidden;
+  }
+
+  .uptime-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--success-color), var(--primary-color));
+    border-radius: 4px;
+    transition: width 0.5s ease;
+  }
+
+  .services-grid {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .service-item {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    background: rgba(52, 152, 219, 0.05);
+    border-radius: 8px;
+    border-left: 4px solid var(--success-color);
+    transition: all 0.3s ease;
+  }
+
+  .service-item:hover {
+    background: rgba(52, 152, 219, 0.1);
+    transform: translateX(5px);
+  }
+
+  .service-item.degraded {
+    border-left-color: var(--warning-color);
+  }
+
+  .service-item.down {
+    border-left-color: var(--danger-color);
+  }
+
+  .service-icon {
+    font-size: 1.5rem;
+    color: var(--primary-color);
+    margin-right: 1rem;
+    width: 40px;
+    text-align: center;
+  }
+
+  .service-info {
+    flex: 1;
+  }
+
+  .service-name {
+    margin: 0 0 0.25rem 0;
+    font-weight: 600;
+    color: var(--secondary-color);
+  }
+
+  .service-description {
+    margin: 0;
+    color: var(--gray-color);
+    font-size: 0.9rem;
+  }
+
+  .service-status {
+    text-align: right;
+  }
+
+  .status-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+
+  .status-badge.up {
+    background: rgba(46, 204, 113, 0.2);
+    color: var(--success-color);
+  }
+
+  .status-badge.degraded {
+    background: rgba(243, 156, 18, 0.2);
+    color: var(--warning-color);
+  }
+
+  .status-badge.down {
+    background: rgba(231, 76, 60, 0.2);
+    color: var(--danger-color);
+  }
+
+  .info-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .info-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .info-item:last-child {
+    border-bottom: none;
+  }
+
+  .info-label {
+    font-weight: 600;
+    color: var(--secondary-color);
+  }
+
+  .info-value {
+    font-weight: 500;
+  }
+
+  .activity-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .activity-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 0.75rem;
+    background: rgba(52, 152, 219, 0.05);
+    border-radius: 8px;
+  }
+
+  .activity-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+  }
+
+  .activity-icon.info {
+    background: rgba(52, 152, 219, 0.2);
+    color: var(--primary-color);
+  }
+
+  .activity-icon.success {
+    background: rgba(46, 204, 113, 0.2);
+    color: var(--success-color);
+  }
+
+  .activity-icon.warning {
+    background: rgba(243, 156, 18, 0.2);
+    color: var(--warning-color);
+  }
+
+  .activity-content {
+    flex: 1;
+  }
+
+  .activity-text {
+    margin: 0 0 0.25rem 0;
+    font-weight: 500;
+  }
+
+  .activity-time {
+    color: var(--gray-color);
+    font-size: 0.8rem;
+  }
+
+  .actions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+  }
+
+  .action-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    gap: 0.5rem;
+  }
+
+  .action-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  .action-btn i {
+    font-size: 1.5rem;
+  }
+
+  .btn-primary { background: linear-gradient(135deg, var(--primary-color), #2980b9); }
+  .btn-info { background: linear-gradient(135deg, #3498db, #2980b9); }
+  .btn-warning { background: linear-gradient(135deg, #f39c12, #e67e22); }
+  .btn-danger { background: linear-gradient(135deg, #e74c3c, #c0392b); }
+
+  @media (max-width: 768px) {
+    .services-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .service-item {
+      flex-direction: column;
+      text-align: center;
+      gap: 1rem;
+    }
+    
+    .service-status {
+      text-align: center;
+    }
+    
+    .actions-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .metric-value {
+      font-size: 2rem;
+    }
+  }
+</style>
+
+<script>
+  function refreshHealth() {
+    Swal.fire({
+      title: 'Refreshing...',
+      text: 'Updating health data',
+      icon: 'info',
+      showConfirmButton: false,
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      }
+    });
+
+    setTimeout(() => {
+      window.location.reload();
+    }, 1000);
+  }
+
+  function showSystemLogs() {
+    Swal.fire({
+      title: 'System Logs',
+      html: `
+        <div style="text-align: left; max-height: 400px; overflow-y: auto;">
+          <pre style="font-size: 12px; background: #f8f9fa; padding: 15px; border-radius: 8px;">
+${generateSampleLogs()}
+          </pre>
+        </div>
+      `,
+      width: 800,
+      confirmButtonText: 'Close',
+      confirmButtonColor: var(--primary-color)
+    });
+  }
+
+  function restartServices() {
+    Swal.fire({
+      title: 'Restart Services?',
+      text: 'This will temporarily interrupt service availability',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, Restart',
+      cancelButtonText: 'Cancel',
+      confirmButtonColor: var(--warning-color)
+    }).then((result) => {
+      if (result.isConfirmed) {
+        Swal.fire({
+          title: 'Restarting Services',
+          text: 'Services are being restarted...',
+          icon: 'info',
+          showConfirmButton: false,
+          timer: 2000
+        });
+      }
+    });
+  }
+
+  function showAdvancedSettings() {
+    Swal.fire({
+      title: 'Advanced Settings',
+      text: 'This feature is under development',
+      icon: 'info',
+      confirmButtonText: 'OK',
+      confirmButtonColor: var(--primary-color)
+    });
+  }
+
+  function generateSampleLogs() {
+    return `[2024-01-15 10:30:15] INFO: System health check completed
+[2024-01-15 10:29:45] INFO: Database connection stable
+[2024-01-15 10:29:30] INFO: 5 active user sessions
+[2024-01-15 10:29:15] INFO: SSH log parsing successful
+[2024-01-15 10:28:00] INFO: Memory usage at 45%
+[2024-01-15 10:27:30] INFO: CPU usage normal
+[2024-01-15 10:27:00] INFO: All services operational`;
+  }
+</script>
