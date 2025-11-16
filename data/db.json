@@ -1,0 +1,28 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "username": "admin",
+      "password": "$2b$10$yKLu/Hcqzp7LtVGCklobqO3.e/mra1afqURSrV4MgMthes6Ts9au2",
+      "email": "admin@localhost",
+      "role": "admin",
+      "createdAt": "2025-11-08T09:47:55.577Z",
+      "lastLogin": "2025-11-08T09:48:20.850Z"
+    }
+  ],
+  "sessions": [
+    {
+      "id": "01673239-9723-4bcd-8e76-7ac2bab1b088",
+      "userId": 1,
+      "username": "admin",
+      "ip": "::1",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36",
+      "createdAt": "2025-11-08T09:48:20.849Z",
+      "expiresAt": "2025-11-09T09:48:20.849Z"
+    }
+  ],
+  "settings": {
+    "maxLoginAttempts": 5,
+    "sessionTimeout": 86400000
+  }
+}
