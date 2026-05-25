@@ -17,6 +17,12 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser());
 
+// log all request with ip and user agent
+app.use((req, res, next) => {
+  console.log(`${req.ip} - ${req.get('User-Agent')}`);
+  next();
+});
+
 // Helper functions برای محاسبات
 const countActiveUsers = (users) => {
   if (!users || !Array.isArray(users)) return 0;
